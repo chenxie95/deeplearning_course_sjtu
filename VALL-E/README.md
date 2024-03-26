@@ -1,4 +1,4 @@
-This is the PyTorch implementation of the VALLE paper. This folder is based on the [fairseq package v0.12.2](https://github.com/pytorch/fairseq/tree/v0.12.2).
+This is the PyTorch implementation of the VALLE paper implemented by [@Ereboas](https://github.com/Ereboas). This folder is based on the [fairseq package v0.12.2](https://github.com/pytorch/fairseq/tree/v0.12.2).
 
 # Requirements and Installation
 
