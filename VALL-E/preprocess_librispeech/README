@@ -1,0 +1,10 @@
+运行 get_libriSpeech_texts.py, 得到LibriSpeech一些数据集转录txt的拼接: trans.txt
+
+运行bpe_script, 训练对应于LibriSpeech对应数据集的bpe model
+NOTE: 此步也可运行train_bpe.py, 因为我并没有在Centos上安装command cli tools for sentencepiece
+
+运行get_bpe.py, 预处理出LibriSpeech各个flac的转录的bpe encoding, 保存在原LibriSpeech的各个子文件夹中
+
+运行get_qnt.py, 预处理出LibriSpeech各个flac的encodec RVQ encoding, 保存在原LibriSpeech的各个子文件夹中
+
+运行dataset_manifest.py, 得到{train|valid}.tsv, 保存了root-dir, filename, codesize

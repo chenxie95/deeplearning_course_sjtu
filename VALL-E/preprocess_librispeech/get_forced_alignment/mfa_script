@@ -1,0 +1,14 @@
+# 确保你已安装MFA: #! 注意, 强烈建议创建一个新的conda环境来安装mfa, 否则很容易出现Solving environment failed.
+conda create -n forced_alignment -c conda-forge montreal-forced-aligner
+conda activate forced_alignment
+
+# 安装pretrained mfa models: 
+# 经实测, 这些models可先手动下载在自己的机器上, 然后传到集群对应位置.
+mfa model download acoustic english_us_arpa
+mfa model download dictionary english_us_arpa
+
+mfa align /data/syk/MFA/LibriSpeech/train english_us_arpa english_us_arpa /data/syk/MFA/aligned/arpa/LibriSpeech/train --clean
+
+mfa align /data/syk/MFA/LibriSpeech/dev english_us_arpa english_us_arpa /data/syk/MFA/aligned/arpa/LibriSpeech/dev --clean
+
+mfa align /data/syk/MFA/LibriSpeech/test english_us_arpa english_us_arpa /data/syk/MFA/aligned/arpa/LibriSpeech/test --clean

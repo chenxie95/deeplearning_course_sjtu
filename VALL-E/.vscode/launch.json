@@ -1,0 +1,85 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "LM-Train-AR",
+            "type": "python",
+            "request": "launch",
+            "program": "fairseq_cli/train.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            //"env":{
+            //    "CUDA_VISIBLE_DEVICES": "0,1,2,3",
+            //},
+            "args": [
+                "/home/ubuntu/forced_alignment/splits",
+                "--save-dir", "checkpoints/valle",
+                "--task", "language_modeling",
+                "--modified", "-a", "transformer_lm",
+                "--skip-invalid-size-inputs-valid-test", "--skip-remainder-batch",
+                "--max-target-positions", "4096",
+                "--optimizer", "adam",
+                "--adam-betas", "(0.9,0.98)",
+                "--weight-decay", "0.01",
+                "--clip-norm", "0.0",
+                "--lr", "0.0005",
+                "--lr-scheduler", "inverse_sqrt",
+                "--warmup-updates", "32000",
+                "--warmup-init-lr", "1e-07",
+                "--tokens-per-sample", "4096",
+                "--max-tokens", "4096",
+                "--update-freq", "4",
+                "--fp16",
+                "--max-update", "800000",
+                "--num-workers", "3",
+                "--ar-task", "--text-full-attention",
+                "--n-control-symbols", "80",
+                //"--wandb-project", "valle-ar"
+            ],
+            "stopOnEntry": false
+        },
+        {
+            "name": "LM-Train-NAR",
+            "type": "python",
+            "request": "launch",
+            "program": "fairseq_cli/train.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env":{
+                "CUDA_VISIBLE_DEVICES": "0,1,2,3",
+            },
+            "args": [
+                "/home/ubuntu/forced_alignment/splits",
+                "--save-dir", "checkpoints/valle",
+                "--task", "language_modeling",
+                "--modified", "-a", "transformer_lm",
+                "--skip-invalid-size-inputs-valid-test", "--skip-remainder-batch",
+                "--max-target-positions", "4096",
+                "--optimizer", "adam",
+                "--adam-betas", "(0.9,0.98)",
+                "--weight-decay", "0.01",
+                "--clip-norm", "0.0",
+                "--lr", "0.0005",
+                "--lr-scheduler", "inverse_sqrt",
+                "--warmup-updates", "32000",
+                "--warmup-init-lr", "1e-07",
+                "--tokens-per-sample", "4096",
+                "--max-tokens", "4096",
+                "--update-freq", "3",
+                "--fp16",
+                "--max-update", "800000",
+                "--num-workers", "3",
+                "--n-control-symbols", "80",
+                //"--wandb-project", "valle-nar"
+            ],
+            "stopOnEntry": false
+        },
+        {
+            "name": "Python: File-justMyCode",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "justMyCode": true
+        }
+    ]
+}

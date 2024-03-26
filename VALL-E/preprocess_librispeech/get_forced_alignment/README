@@ -1,0 +1,16 @@
+运行 reformat_corpus.py, 得到 LibriSpeech 数据集适用于 Montreal Forced Aligner 的结构重建.
+这一步是必须的, 因为MFA要求同一个speaker的音频置于一个文件夹中.
+Ref:  https://montreal-forced-aligner.readthedocs.io/en/latest/user_guide/corpus_structure.html#corpus-structure
+
+运行 get_dict.py, 得到phone dict, 会保存在上一步 MFA 的语料库主目录中.
+phone set 原则上可直接查询MFA dictionary发布页, 例如 https://mfa-models.readthedocs.io/en/latest/dictionary/English/English%20%28US%29%20ARPA%20dictionary%20v2_0_0a.html 
+
+运行 get_phones.py, 会首先过滤掉包含<spn>(代表unk phone)的句子, 然后把每个MFA结果各自整理为一个dict, 其中value值都为1d LongTensor:
+{
+    's': start frame sequence
+    'e': end frame sequence
+    'p': phone id sequence
+}
+
+运行dataset_manifest.py, 应注意调整 N_SPECIAL_TOKENS, CONTROL_MULTIPLIER, ACOUSTIC_MULTIPLIER 的值.
+但实际上不精确调整也不会有太大影响, 只会影响fairseq默认batch_iter的分配精度, 不会影响训练.

@@ -1,0 +1,12 @@
+在执行asr.py时, 可能会报神奇错误. 解决方法为:
+
+首先, 查找conda环境的安装位置
+    conda info --envs
+
+然后, 在此目录下的lib文件夹, 你会发现缺少libopenh264.so.5文件
+
+你需要在github release页面 (https://github.com/cisco/openh264/releases/tag/v2.1.0) 下载
+    wget https://github.com/cisco/openh264/releases/download/v2.1.0/libopenh264-2.1.0-linux64.5.so.bz2
+    bzip2 -d libopenh264-2.1.0-linux64.5.so.bz2
+
+然后将其重命名为libopenh264.so.5即可
