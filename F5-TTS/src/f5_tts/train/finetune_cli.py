@@ -101,7 +101,22 @@ def main():
                 ckpt_path = str(cached_path("hf://SWivid/F5-TTS/F5TTS_v1_Base/model_1250000.safetensors"))
             else:
                 ckpt_path = args.pretrain
-
+    elif args.exp_name == "F5TTS_v1_Small":
+        wandb_resume_id = None
+        model_cls = DiT
+        model_cfg = dict(
+            dim=768,
+            depth=18,
+            heads=12,
+            ff_mult=2,
+            text_dim=512,
+            conv_layers=4,
+        )
+        if args.finetune:
+            if args.pretrain is None:
+                ckpt_path = str(cached_path("hf://SWivid/F5-TTS/F5TTS_v1_Small/model_1200000.pt"))
+            else:
+                ckpt_path = args.pretrain
     elif args.exp_name == "F5TTS_Base":
         wandb_resume_id = None
         model_cls = DiT

@@ -394,7 +394,10 @@ class Trainer:
                     if self.logger == "tensorboard":
                         self.writer.add_scalar("loss", loss.item(), global_update)
                         self.writer.add_scalar("lr", self.scheduler.get_last_lr()[0], global_update)
-
+                
+                if global_update % self.last_per_updates == 0 and self.accelerator.sync_gradients:
+                    self.save_checkpoint(global_update, last=True)
+                
                 if global_update % self.save_per_updates == 0 and self.accelerator.sync_gradients:
                     self.save_checkpoint(global_update)
 
@@ -428,9 +431,7 @@ class Trainer:
                         torchaudio.save(
                             f"{log_samples_path}/update_{global_update}_ref.wav", ref_audio, target_sample_rate
                         )
-
-                if global_update % self.last_per_updates == 0 and self.accelerator.sync_gradients:
-                    self.save_checkpoint(global_update, last=True)
+                        self.model.train()
 
         self.save_checkpoint(global_update, last=True)
 

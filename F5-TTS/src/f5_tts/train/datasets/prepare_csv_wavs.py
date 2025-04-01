@@ -30,9 +30,7 @@ PRETRAINED_VOCAB_PATH = files("f5_tts").joinpath("../../data/Emilia_ZH_EN_pinyin
 def is_csv_wavs_format(input_dataset_dir):
     fpath = Path(input_dataset_dir)
     metadata = fpath / "metadata.csv"
-    wavs = fpath / "wavs"
-    return metadata.exists() and metadata.is_file() and wavs.exists() and wavs.is_dir()
-
+    return metadata.exists() and metadata.is_file()
 
 # Configuration constants
 BATCH_SIZE = 100  # Batch size for text conversion
