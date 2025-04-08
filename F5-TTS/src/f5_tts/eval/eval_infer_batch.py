@@ -17,6 +17,7 @@ from f5_tts.eval.utils_eval import (
     get_inference_prompt,
     get_librispeech_test_clean_metainfo,
     get_seedtts_testset_metainfo,
+    get_sichuan_test_metainfo
 )
 from f5_tts.infer.utils_infer import load_checkpoint, load_vocoder
 from f5_tts.model import CFM, DiT, UNetT  # noqa: F401. used for config
@@ -91,6 +92,10 @@ def main():
         metalst = rel_path + "/data/seedtts_testset/en/meta.lst"
         metainfo = get_seedtts_testset_metainfo(metalst)
 
+    elif testset == "sichuan_test":
+        metalst = rel_path + "/data/sichuan_cross_sentence.lst"
+        sichuan_dataset = "<SOME_PATH>/sichuan"  # Sichuan dataset path
+        metainfo = get_sichuan_test_metainfo(metalst, sichuan_dataset)
     # path to save genereted wavs
     output_dir = (
         f"{rel_path}/"

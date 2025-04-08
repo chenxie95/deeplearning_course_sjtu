@@ -175,12 +175,19 @@ C0	G0001_0014.wav	G0001		多少女孩在恋爱期保持处女呀
 You can use the following command to convert the UTTRANSINFO.txt file to our training format.  
 
 ```bash
+# if your dataset under /data/sichuan
 # generate metadata.csv
-python src/f5_tts/train/datasets/prepare_sichuan_metadata.py --input <absolute path of UTTRANSINFO.txt>
+python src/f5_tts/train/datasets/prepare_sichuan_metadata.py --input /data/sichuan/UTTRANSINFO.txt
 
 # generate training dataset
-python src/f5_tts/train/datasets/prepare_csv_wavs.py /input/dataset/path ./data/sichuan
+python src/f5_tts/train/datasets/prepare_csv_wavs.py /data/sichuan ./data/sichuan_pinyin
 ```
+
+After the process, you will get three components under `./data/sichuan`, including:
+
+- vocab.txt: text vocabulary
+- duration.json: audio data duration
+- raw.arrow: store data metafiles, such as path, text, and other
 
 ### Training & Finetuning
 
@@ -192,7 +199,33 @@ Once your datasets are prepared, you can start the training process.
 # setup accelerate config, e.g. use multi-gpu ddp, fp16
 # will be to: ~/.cache/huggingface/accelerate/default_config.yaml     
 accelerate config
+```
 
+The content of `default_config.yaml` is as follows:
+
+```yaml
+compute_environment: LOCAL_MACHINE
+debug: false
+distributed_type: 'NO'
+downcast_bf16: 'no'
+enable_cpu_affinity: true
+gpu_ids: all
+machine_rank: 0
+main_training_function: main
+mixed_precision: fp16
+num_machines: 1
+num_processes: 1
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false
+```
+
+You can use the following command to start the training process
+
+```bash
 # .yaml files are under src/f5_tts/configs directory
 accelerate launch src/f5_tts/train/train.py --config-name F5TTS_v1_Base.yaml
 
@@ -201,6 +234,7 @@ accelerate launch --mixed_precision=fp16 src/f5_tts/train/train.py --config-name
 ```
 
 #### 2. Finetuning practice
+
 Discussion board for Finetuning [#57](https://github.com/SWivid/F5-TTS/discussions/57).
 
 Gradio UI training/finetuning with `src/f5_tts/train/finetune_gradio.py` see [#143](https://github.com/SWivid/F5-TTS/discussions/143).
@@ -208,6 +242,12 @@ Gradio UI training/finetuning with `src/f5_tts/train/finetune_gradio.py` see [#1
 The `use_ema = True` is harmful for early-stage finetuned checkpoints (which goes just few updates, thus ema weights still dominated by pretrained ones), try turn it off and see if provide better results.
 
 We recommend using the `src/f5_tts/train/finetune_cli.py` script for finetuning. It offers a user-friendly interface, allows you to easily adjust hyperparameters, and provides better monitoring of training progress. For details on additional parameters, please refer to the script itself.
+
+```bash
+python src/f5_tts/train/finetune_cli.py --finetune --pretrain_path <pretrain_model path>/model_1200000.pt --epochs 120
+```
+
+
 
 #### 3. W&B Logging
 if you want to use W&B logging, you can use the following command to run the training script.
@@ -239,6 +279,13 @@ Install evaluation packages:
 pip install -e .[eval]
 ```
 Detailed evaluation instructions are available in the [evaluation](src/f5_tts/eval).
+Before running the evaluation, please download the pretrained vocoder model from [huggingface](https://huggingface.co/charactr/vocos-mel-24khz) by running the following command:
+```bash
+pip install -U huggingface_hub
+export HF_ENDPOINT=https://hf-mirror.com
+huggingface-cli download --resume-download charactr/vocos-mel-24khz --local-dir vocos-mel-24khz
+```
+
 ## More Infroamtion
 If you want to know more about the project, please refer to the [official Github](https://github.com/SWivid/F5-TTS). There are more detailed instructions and explanations in [issues](https://github.com/SWivid/F5-TTS/issues) and [discussions](https://github.com/SWivid/F5-TTS/discussions). If you have any questions, please feel free to open an issue in official Github or contact your TA.
 

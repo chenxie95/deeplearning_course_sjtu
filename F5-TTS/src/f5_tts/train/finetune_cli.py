@@ -26,13 +26,13 @@ def parse_args():
     parser.add_argument(
         "--exp_name",
         type=str,
-        default="F5TTS_v1_Base",
-        choices=["F5TTS_v1_Base", "F5TTS_Base", "E2TTS_Base"],
+        default="F5TTS_v1_Small",
+        choices=["F5TTS_v1_Base","F5TTS_v1_Small","F5TTS_Base", "E2TTS_Base"],
         help="Experiment name",
     )
-    parser.add_argument("--dataset_name", type=str, default="Emilia_ZH_EN", help="Name of the dataset to use")
+    parser.add_argument("--dataset_name", type=str, default="sichuan", help="Name of the dataset to use")
     parser.add_argument("--learning_rate", type=float, default=1e-5, help="Learning rate for training")
-    parser.add_argument("--batch_size_per_gpu", type=int, default=3200, help="Batch size per GPU")
+    parser.add_argument("--batch_size_per_gpu", type=int, default=32000, help="Batch size per GPU")
     parser.add_argument(
         "--batch_size_type", type=str, default="frame", choices=["frame", "sample"], help="Batch size type"
     )
@@ -41,16 +41,16 @@ def parse_args():
     parser.add_argument("--max_grad_norm", type=float, default=1.0, help="Max gradient norm for clipping")
     parser.add_argument("--epochs", type=int, default=100, help="Number of training epochs")
     parser.add_argument("--num_warmup_updates", type=int, default=20000, help="Warmup updates")
-    parser.add_argument("--save_per_updates", type=int, default=50000, help="Save checkpoint every N updates")
+    parser.add_argument("--save_per_updates", type=int, default=5000, help="Save checkpoint every N updates")
     parser.add_argument(
         "--keep_last_n_checkpoints",
         type=int,
         default=-1,
         help="-1 to keep all, 0 to not save intermediate, > 0 to keep last N checkpoints",
     )
-    parser.add_argument("--last_per_updates", type=int, default=5000, help="Save last checkpoint every N updates")
+    parser.add_argument("--last_per_updates", type=int, default=1000, help="Save last checkpoint every N updates")
     parser.add_argument("--finetune", action="store_true", help="Use Finetune")
-    parser.add_argument("--pretrain", type=str, default=None, help="the path to the checkpoint")
+    parser.add_argument("--pretrain_path", type=str, default=None, help="the path to the checkpoint")
     parser.add_argument(
         "--tokenizer", type=str, default="pinyin", choices=["pinyin", "char", "custom"], help="Tokenizer type"
     )
@@ -81,7 +81,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    checkpoint_path = str(files("f5_tts").joinpath(f"../../ckpts/{args.dataset_name}"))
+    checkpoint_path = str(files("f5_tts").joinpath(f"../../ckpts/{args.exp_name}"))
 
     # Model parameters based on experiment name
 
@@ -97,10 +97,10 @@ def main():
             conv_layers=4,
         )
         if args.finetune:
-            if args.pretrain is None:
+            if args.pretrain_path is None:
                 ckpt_path = str(cached_path("hf://SWivid/F5-TTS/F5TTS_v1_Base/model_1250000.safetensors"))
             else:
-                ckpt_path = args.pretrain
+                ckpt_path = args.pretrain_path
     elif args.exp_name == "F5TTS_v1_Small":
         wandb_resume_id = None
         model_cls = DiT
@@ -113,10 +113,11 @@ def main():
             conv_layers=4,
         )
         if args.finetune:
-            if args.pretrain is None:
+            # ckpt_path: the absolute path of the pretrain checkpoint 
+            if args.pretrain_path is None:
                 ckpt_path = str(cached_path("hf://SWivid/F5-TTS/F5TTS_v1_Small/model_1200000.pt"))
             else:
-                ckpt_path = args.pretrain
+                ckpt_path = args.pretrain_path
     elif args.exp_name == "F5TTS_Base":
         wandb_resume_id = None
         model_cls = DiT
@@ -131,10 +132,10 @@ def main():
             pe_attn_head=1,
         )
         if args.finetune:
-            if args.pretrain is None:
+            if args.pretrain_path is None:
                 ckpt_path = str(cached_path("hf://SWivid/F5-TTS/F5TTS_Base/model_1200000.pt"))
             else:
-                ckpt_path = args.pretrain
+                ckpt_path = args.pretrain_path
 
     elif args.exp_name == "E2TTS_Base":
         wandb_resume_id = None
@@ -148,10 +149,10 @@ def main():
             pe_attn_head=1,
         )
         if args.finetune:
-            if args.pretrain is None:
+            if args.pretrain_path is None:
                 ckpt_path = str(cached_path("hf://SWivid/E2-TTS/E2TTS_Base/model_1200000.pt"))
             else:
-                ckpt_path = args.pretrain
+                ckpt_path = args.pretrain_path
 
     if args.finetune:
         if not os.path.isdir(checkpoint_path):
@@ -177,8 +178,9 @@ def main():
 
     vocab_char_map, vocab_size = get_tokenizer(tokenizer_path, tokenizer)
 
-    print("\nvocab : ", vocab_size)
-    print("\nvocoder : ", mel_spec_type)
+    print("vocab : ", vocab_size)
+    print("vocoder : ", mel_spec_type)
+    print("pretrain ckpt path: ", ckpt_path)
 
     mel_spec_kwargs = dict(
         n_fft=n_fft,

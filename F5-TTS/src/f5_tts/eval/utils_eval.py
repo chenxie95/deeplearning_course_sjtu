@@ -13,6 +13,19 @@ from f5_tts.eval.ecapa_tdnn import ECAPA_TDNN_SMALL
 from f5_tts.model.modules import MelSpec
 from f5_tts.model.utils import convert_char_to_pinyin
 
+def get_sichuan_test_metainfo(metalst,audio_root):
+    f = open(metalst)
+    lines = f.readlines()
+    f.close()
+    metainfo = []
+    for line in lines[1:]:
+        utt, gt_text, prompt_wav, prompt_text = line.strip().split("|")
+        spk, _ = utt.split("_")
+        gt_wav = os.path.join(audio_root, "WAV", spk, utt + ".wav" )
+        if not os.path.isabs(prompt_wav):
+            prompt_wav = os.path.join(audio_root, prompt_wav)
+        metainfo.append((utt, prompt_text, prompt_wav, gt_text, gt_wav))
+    return metainfo
 
 # seedtts testset metainfo: utt, prompt_text, prompt_wav, gt_text, gt_wav
 def get_seedtts_testset_metainfo(metalst):

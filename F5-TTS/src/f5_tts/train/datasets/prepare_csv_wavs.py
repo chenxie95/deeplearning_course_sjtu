@@ -29,7 +29,7 @@ PRETRAINED_VOCAB_PATH = files("f5_tts").joinpath("../../data/Emilia_ZH_EN_pinyin
 
 def is_csv_wavs_format(input_dataset_dir):
     fpath = Path(input_dataset_dir)
-    metadata = fpath / "metadata.csv"
+    metadata = fpath / "train.csv"
     return metadata.exists() and metadata.is_file()
 
 # Configuration constants
@@ -92,7 +92,7 @@ def prepare_csv_wavs_dir(input_dir, num_workers=None):
     global executor
     assert is_csv_wavs_format(input_dir), f"not csv_wavs format: {input_dir}"
     input_dir = Path(input_dir)
-    metadata_path = input_dir / "metadata.csv"
+    metadata_path = input_dir / "train.csv"
     audio_path_text_pairs = read_audio_text_pairs(metadata_path.as_posix())
 
     polyphone = True
