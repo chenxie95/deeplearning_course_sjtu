@@ -85,7 +85,7 @@ f5-tts_infer-cli -c src/f5_tts/infer/examples/multi/story.toml
 ## Training & Finetuning
 
 We will provide a pretrained F5-TTS Small model for this course to finetune.
-This model is trained on the [Emilia dataset](https://huggingface.co/datasets/amphion/Emilia-Dataset/tree/fc71e07) and can be downloaded from [here](). If you want to train your own model or finetune this model, please read the following guidance for more instructions on how to prepare the dataset and train the model.
+This model is trained on the [Emilia dataset](https://huggingface.co/datasets/amphion/Emilia-Dataset/tree/fc71e07). If you want to train your own model or finetune this model, please read the following guidance for more instructions on how to prepare the dataset and train the model.
 
 ### Prepare Dataset
 
@@ -172,14 +172,11 @@ C0	G0001_0012.wav	G0001		天起越热，药味就弥漫得越快，这说明
 C0	G0001_0013.wav	G0001		劲舞团如何卡歌
 C0	G0001_0014.wav	G0001		多少女孩在恋爱期保持处女呀
 ```
-You can use the following command to convert the UTTRANSINFO.txt file to our training format.  
-
+We 
 ```bash
 # if your dataset under /data/sichuan
-# generate metadata.csv
-python src/f5_tts/train/datasets/prepare_sichuan_metadata.py --input /data/sichuan/UTTRANSINFO.txt
 
-# generate training dataset
+# generate training dataset, we have already provided a train.csv under the data dir
 python src/f5_tts/train/datasets/prepare_csv_wavs.py /data/sichuan ./data/sichuan_pinyin
 ```
 
@@ -241,7 +238,7 @@ Gradio UI training/finetuning with `src/f5_tts/train/finetune_gradio.py` see [#1
 
 The `use_ema = True` is harmful for early-stage finetuned checkpoints (which goes just few updates, thus ema weights still dominated by pretrained ones), try turn it off and see if provide better results.
 
-We recommend using the `src/f5_tts/train/finetune_cli.py` script for finetuning. It offers a user-friendly interface, allows you to easily adjust hyperparameters, and provides better monitoring of training progress. For details on additional parameters, please refer to the script itself.
+We recommend using the `src/f5_tts/train/finetune_cli.py` script for finetuning. It offers a user-friendly interface, allows you to easily adjust hyperparameters, and provides better monitoring of training progress. For details on additional parameters, please refer to the script itself. We also provide a `finetune.sh` script for your convenience.
 
 ```bash
 python src/f5_tts/train/finetune_cli.py --finetune --pretrain_path <pretrain_model path>/model_1200000.pt --epochs 120
